@@ -17,6 +17,9 @@
     <tr>
         <td><label for="numberOfSamples">Samples</label></td>
         <td><InputNumber TValue="int" @bind-Value="_numberOfSamples" id="numberOfSamples" /></td>
+        <td>
+            @AliveCount
+        </td>
     </tr>
     <tr>
         <td><label for="bet">Bet size</label></td>
@@ -49,6 +52,21 @@
 
     //костыль, потому что нормально значения потом из серии не достанешь
     private Dictionary<ISeries, ObservableCollection<double>> valueCollections;
+
+    private int AliveCount
+    {
+        get
+        {
+            if (_series == null || !_series.Any())
+                return 0;
+
+
+            var lastValues = valueCollections.Values.Select(vals => vals.Last());
+            var greaterThanZeroVals = lastValues.Where(lv => lv > 0);
+
+            return greaterThanZeroVals.Count();
+        }
+    }
 
     protected override void OnInitialized()
     {
@@ -85,6 +103,9 @@
 
     void PlayGame()
     {
+        if (_series == null || !_series.Any())
+            return;
+
         for (var i = 0; i < _playTimes; i++)
         {
             PlaySingleGame();
