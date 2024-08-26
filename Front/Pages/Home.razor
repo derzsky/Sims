@@ -7,7 +7,7 @@
 
 <PageTitle>Виктор Джангиров</PageTitle>
 
-<h1>Матожидание</h1>
+<h4>Матожидание</h4>
 
 <table>
     <tr>
@@ -32,6 +32,12 @@
     <span><button @onclick="PlayGame">Play</button> </span>
 </p>
 
+@if (_series == null || !_series.Any())
+    return;
+
+<h3>Поставь лайк</h3>
+<h4>И подпишись</h4>
+
 <CartesianChart Series="_series">
 </CartesianChart>
 
@@ -52,7 +58,7 @@
     void SetInitialValues()
     {
         _series = GenerateInitedSeries(_numberOfSamples);
-        _generator = new EvGenerator(_chanceOfWinning);
+        _generator = new EvGenerator();
     }
 
     ObservableCollection<ISeries> GenerateInitedSeries(int number)
@@ -89,7 +95,7 @@
     {
         foreach (var currentSeries in _series)
         {
-            if (_generator.HaveWon())
+            if (_generator.HasWon(_chanceOfWinning))
             {
                 TransferPrize(currentSeries, _bet);
             }

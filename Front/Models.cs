@@ -2,19 +2,17 @@
 {
 	public class EvGenerator
 	{
-		private double _chance;
 		private Random _random;
 
-		public EvGenerator(double chance)
+		public EvGenerator()
 		{
-			_chance = chance;
 			_random = new Random();
 		}
 
-		public bool HaveWon()
+		public bool HasWon(double chance)
 		{
 			var nextDouble = _random.NextDouble();
-			return nextDouble >= _chance / 100;
+			return nextDouble >= 1 - chance / 100;
 		}
 	}
 }
