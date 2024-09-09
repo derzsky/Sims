@@ -1,0 +1,140 @@
+﻿@using LiveChartsCore
+@using LiveChartsCore.SkiaSharpView
+@using LiveChartsCore.SkiaSharpView.Blazor
+@using System.Collections.ObjectModel
+
+<PageTitle>Виктор Джангиров</PageTitle>
+
+<h4>Матожидание</h4>
+
+<table>
+    <tr>
+        <td style="min-width:100px;"><label for="chancesOfWinning">Chances</label></td>
+        <td><InputNumber TValue="int" @bind-Value="_chanceOfWinning" id="chancesOfWinning" /></td>
+    </tr>
+    <tr>
+        <td><label for="numberOfSamples">Samples</label></td>
+        <td><InputNumber TValue="int" @bind-Value="_numberOfSamples" id="numberOfSamples" /></td>
+        <td>
+            @AliveCount
+        </td>
+    </tr>
+    <tr>
+        <td><label for="bet">Bet size</label></td>
+        <td><InputNumber TValue="int" @bind-Value="_bet" id="bet" /></td>
+    </tr>
+    <tr>
+        <td><label for="playTimes">Repetitions</label></td>
+        <td><InputNumber TValue="int" @bind-Value="_playTimes" id="playTimes" /></td>
+    </tr>
+</table>
+<p>
+    <span><button @onclick="SetInitialValues">Init</button> </span>
+    <span><button @onclick="PlayGame">Play</button> </span>
+</p>
+
+@if (_series == null || !_series.Any())
+    return;
+
+<h3>Поставь лайк</h3>
+<h4>И подпишись</h4>
+
+<CartesianChart Series="_series">
+</CartesianChart>
+
+@code {
+    private IEnumerable<ISeries> _series;
+    private EvGenerator _generator;
+
+    private int _chanceOfWinning = 50, _numberOfSamples = 8, _bet = 40, _playTimes = 10;
+
+    //костыль, потому что нормально значения потом из серии не достанешь
+    private Dictionary<ISeries, ObservableCollection<double>> valueCollections;
+
+    private int AliveCount
+    {
+        get
+        {
+            if (_series == null || !_series.Any())
+                return 0;
+
+
+            var lastValues = valueCollections.Values.Select(vals => vals.Last());
+            var greaterThanZeroVals = lastValues.Where(lv => lv > 0);
+
+            return greaterThanZeroVals.Count();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    void SetInitialValues()
+    {
+        _series = GenerateInitedSeries(_numberOfSamples);
+        _generator = new EvGenerator();
+    }
+
+    ObservableCollection<ISeries> GenerateInitedSeries(int number)
+    {
+        ObservableCollection<ISeries> seriesCollection = new();
+        valueCollections = new();
+
+        for (var i = 0; i < number; i++)
+        {
+            var valuesCollection = new ObservableCollection<double> { 100 };
+
+            var oneSeries = new StackedAreaSeries<double>
+                {
+                    Values = valuesCollection,
+                    GeometrySize = 0
+                };
+            seriesCollection.Add(oneSeries);
+
+            valueCollections.Add(oneSeries, valuesCollection);
+        }
+
+        return seriesCollection;
+    }
+
+    void PlayGame()
+    {
+        if (_series == null || !_series.Any())
+            return;
+
+        for (var i = 0; i < _playTimes; i++)
+        {
+            PlaySingleGame();
+        }
+    }
+
+    void PlaySingleGame()
+    {
+        foreach (var currentSeries in _series)
+        {
+            if (_generator.HasWon(_chanceOfWinning))
+            {
+                TransferPrize(currentSeries, _bet);
+            }
+            else
+            {
+                TransferPrize(currentSeries, -_bet);
+            }
+        }
+    }
+
+    void TransferPrize(ISeries series, double prize)
+    {
+        var collection = valueCollections[series];
+        var lastValue = collection.Last();
+
+        if (lastValue <= 0)
+        {
+            return;
+        }
+
+        collection.Add(lastValue + prize);
+    }
+}
