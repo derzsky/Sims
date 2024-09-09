@@ -4,6 +4,7 @@
 @using LiveChartsCore.SkiaSharpView
 @using LiveChartsCore.SkiaSharpView.Blazor
 @using System.Collections.ObjectModel
+@using PositiveEV
 
 <PageTitle>Виктор Джангиров</PageTitle>
 
@@ -31,8 +32,8 @@
     </tr>
 </table>
 <p>
-    <span><button @onclick="SetInitialValues">Init</button> </span>
-    <span><button @onclick="PlayGame">Play</button> </span>
+    <span><button class="btn btn-outline-primary" @onclick="SetInitialValues">Init</button> </span>
+    <span><button class="btn btn-primary" @onclick="PlayGame">Play</button> </span>
 </p>
 
 @if (_series == null || !_series.Any())
