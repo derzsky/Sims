@@ -61,17 +61,11 @@
             if (_series == null || !_series.Any())
                 return 0;
 
-
             var lastValues = valueCollections.Values.Select(vals => vals.Last());
             var greaterThanZeroVals = lastValues.Where(lv => lv > 0);
 
             return greaterThanZeroVals.Count();
         }
-    }
-
-    protected override void OnInitialized()
-    {
-
     }
 
     void SetInitialValues()

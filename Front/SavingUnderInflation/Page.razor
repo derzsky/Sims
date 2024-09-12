@@ -1,11 +1,146 @@
 ﻿@page "/"
 
+@using LiveChartsCore
+@using LiveChartsCore.SkiaSharpView
+@using LiveChartsCore.SkiaSharpView.Blazor
+@using System.Collections.ObjectModel
 @using Front.SavingUnderInflation
 
 <PageTitle>Подпишись, нажми лайк</PageTitle>
 
 <h4>Копим вопреки инфляции</h4>
 
-@code {
+<table>
+    <tr>
+        <td style="width: 260px;"><label for="house-price">Цена дома</label></td>
+        <td><InputNumber TValue="double" @bind-Value="_housePrice" id="house-price"></InputNumber></td>
+    </tr>
+    <tr>
+        <td><label for="salary">Зарплата рабочего</label></td>
+        <td><InputNumber TValue="double" @bind-Value=_salary id="salary"></InputNumber></td>
+    </tr>
+    <tr>
+        <td><label for="saving-percentage">Копит, %</label></td>
+        <td><InputNumber TValue="double" @bind-Value=_savingPercentage id="saving-percentage"></InputNumber></td>
+    </tr>
+    <tr>
+        <td><label for="housing-price-growth-rate">Дорожание сверх инфляции, %</label></td>
+        <td><InputNumber TValue="double" @bind-Value=_housingPriceGrowRate id="housing-price-growth-rate"></InputNumber></td>
+    </tr>
+</table>
 
+<p>
+    <br />
+    <button class="btn btn-outline-primary" @onclick=SetInitialValues>Инициализация</button>
+    <button class="btn btn-primary" @onclick=SetInitialValues>Запуск</button>
+</p>
+
+@if (_series == null || !_series.Any())
+    return;
+
+<h3>Поставь лайк</h3>
+<h4>И подпишись</h4>
+
+<CartesianChart Series="_series">
+</CartesianChart>
+
+@code {
+    IEnumerable<ISeries> _series;
+    List<Worker> _workers;
+    List<House> _houses;
+    Dictionary<House, ObservableCollection<double>> _housePricesOnChart;
+    Dictionary<Worker, ObservableCollection<double>> _workerSalariesOnChart;
+    Dictionary<Worker, ObservableCollection<double>> _workerSavingsOnChart;
+
+    double _housePrice = 100_000, _salary = 100_000, _savingPercentage = 20, _carrereLimit = 50, _housingPriceGrowRate = 29;
+
+    int _minInflation = 0, _maxInflation = 10;
+
+    void SetInitialValues()
+    {
+        _workers = GenerateWorkers();
+
+        _houses = GenerateHouses();
+
+        _series = GenerateInitedSeries(_houses, _workers);
+    }
+
+    List<Worker> GenerateWorkers()
+    {
+        List<Worker> workers = new();
+        for (int i = _minInflation; i <= _maxInflation; i++)
+        {
+            var worker = new Worker
+                {
+                    Salary = _salary
+                };
+
+            workers.Add(worker);
+        }
+
+        return workers;
+    }
+
+    List<House> GenerateHouses()
+    {
+        List<House> houses = new();
+
+        for (int i = _minInflation; i <= _maxInflation; i++)
+        {
+            var house = new House
+                {
+                    Price = _housePrice
+                };
+
+            houses.Add(house);
+        }
+
+        return houses;
+    }
+
+    ObservableCollection<ISeries> GenerateInitedSeries(List<House> houses, List<Worker> workers)
+    {
+        ObservableCollection<ISeries> seriesCollection = new();
+
+        _housePricesOnChart = new();
+        foreach (var house in houses)
+        {
+            var priceValuesCollection = new ObservableCollection<double> { house.Price };
+            var housePriceSeries = new LineSeries<double>
+                {
+                    Values = priceValuesCollection,
+                    GeometrySize = 0
+                };
+            seriesCollection.Add(housePriceSeries);
+            _housePricesOnChart.Add(house, priceValuesCollection);
+        }
+
+        _workerSalariesOnChart = new();
+        foreach (var worker in workers)
+        {
+            var workerSavingsCollection = new ObservableCollection<double> { 0 };
+            var workedSavingsSeries = new LineSeries<double>
+                {
+                    Values = workerSavingsCollection,
+                    GeometrySize = 0
+                };
+            seriesCollection.Add(workedSavingsSeries);
+            workerSavings.Add(workedSavingsSeries, workerSavingsCollection);
+        }
+
+        return seriesCollection;
+    }
+
+    void Iteration()
+    {
+        UpdateHousePrices();
+    }
+
+    void UpdateHousePrices()
+    {
+        foreach (var house in _houses)
+        {
+            
+        }
+    }
 }
