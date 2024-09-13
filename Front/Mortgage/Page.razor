@@ -1,0 +1,331 @@
+﻿@page "/"
+
+@using LiveChartsCore
+@using LiveChartsCore.SkiaSharpView
+@using LiveChartsCore.SkiaSharpView.Blazor
+@using System.Collections.ObjectModel
+@using LiveChartsCore.SkiaSharpView.Painting;
+@using SkiaSharp;
+
+<PageTitle>Подпишись, нажми лайк</PageTitle>
+
+<h4>Симуляция ипотеки</h4>
+
+<table>
+    <tr>
+        <td style="width: 150px"><label for="min-house-price">Мин. цена дома</label></td>
+        <td><InputNumber TValue="double" @bind-Value=_minPrice id="min-house-price"></InputNumber></td>
+    </tr>
+    <tr>
+        <td><label for="max-house-price">Макс. цена дома</label></td>
+        <td><InputNumber TValue="double" @bind-Value=_maxPrice id="max-house-price"></InputNumber></td>
+    </tr>
+    <tr>
+        <td><label for="houses-count">Кол-во домов</label></td>
+        <td><InputNumber TValue="int" @bind-Value=_numberOfHouses id="houses-count"></InputNumber></td>
+    </tr>
+    <tr>
+        <td><label for="people-count">Кол-во людей</label></td>
+        <td><InputNumber TValue="int" @bind-Value=_numberOfPeople id="people-count"></InputNumber></td>
+    </tr>
+    <tr>
+        <td><label for="min-salary">Мин чистая ЗП</label></td>
+        <td><InputNumber TValue="double" @bind-Value=_minSalary id="min-salary"></InputNumber></td>
+    </tr>
+    <tr>
+        <td><label for="max-salary">Макс чистая ЗП</label></td>
+        <td><InputNumber TValue="double" @bind-Value=_maxSalary id="max-salary"></InputNumber></td>
+    </tr>
+    <tr>
+        <td><label for="min-balance">Мин баланс</label></td>
+        <td><InputNumber TValue="double" @bind-Value=_minBalance id="min-balance"></InputNumber></td>
+    </tr>
+    <tr>
+        <td><label for="max-balance">Макс баланс</label></td>
+        <td><InputNumber TValue="double" @bind-Value=_maxBalance id="max-balance"></InputNumber></td>
+    </tr>
+    <tr>
+        <td><label for="bank-plays">Банк в деле</label></td>
+        <td><InputCheckbox TValue="bool" @bind-Value=_bankIsHere id="bank-plays"></InputCheckbox></td>
+    </tr>
+    <tr>
+        <td><label>Прошло итераций</label></td>
+        <td>@_iterations</td>
+    </tr>
+</table>
+
+<p>
+    <br />
+    <button class="btn btn-outline-primary" @onclick=SetInitialValues>Инициализация</button>
+    <button class="btn btn-primary" @onclick=@(() => Iterations(1))>x1</button>
+    <button class="btn btn-primary" @onclick=@(() => Iterations(10))>x10</button>
+    <button class="btn btn-primary" @onclick=@(() => Iterations(100))>x100</button>
+    <button class="btn btn-primary" @onclick=@(() => Iterations(1000))>x1000</button>
+    <button class="btn btn-primary" @onclick=@(() => Iterations(10000))>x10000</button>
+</p>
+
+@if (_housePriceSeries == null || !_housePriceSeries.Any())
+    return;
+
+<h3>Поставь лайк</h3>
+<h4>И подпишись</h4>
+
+
+<table>
+    @if (_bankIsHere)
+    {
+        <tr>
+            <td><label>Денег у Банка</label></td>
+            <td>@_market.People.Last().Balance.ToString("########.")</td>
+        </tr>
+    }
+    <tr>
+        <td style="width: 150px;"><label>Ср. дом</label></td>
+        <td>@_market.Houses.Average(h => h.Price).ToString("########.")</td>
+    </tr>
+</table>
+
+<h5>Дома на продаже</h5>
+<CartesianChart Series="_housePriceSeries" YAxes="YAxes">
+</CartesianChart>
+
+<h5>Дома</h5>
+<CartesianChart Series="_housesStates">
+</CartesianChart>
+
+<h5>Люди с домами и без</h5>
+<CartesianChart Series="_propertyOwnersSeries">
+</CartesianChart>
+
+@* <span>Денег в рынке и у людей</span>
+<CartesianChart Series="_totalBalances">
+</CartesianChart>
+
+<span>Зарплаты и аренда</span>
+<CartesianChart Series="_salariesAndRendSeries">
+</CartesianChart> *@
+
+@code {
+    double _minPrice = 10_000, _maxPrice = 900_000, _minSalary = 200, _maxSalary = 3000, _minBalance = 2000, _maxBalance = 40_000;
+
+    int _iterations = 0, _numberOfHouses = 30, _numberOfPeople = 30;
+
+    bool _bankIsHere = false;
+
+    private static readonly int s_logBase = 10;
+
+    Market _market = new Market();
+
+    public Axis[] YAxes { get; set; } =
+    {
+        new LogaritmicAxis(s_logBase)
+        {
+            SeparatorsPaint = new SolidColorPaint
+            {
+                Color = SKColors.Black.WithAlpha(100),
+                StrokeThickness = 1,
+            },
+            SubseparatorsPaint = new SolidColorPaint
+            {
+                Color = SKColors.Black.WithAlpha(50),
+                StrokeThickness = 0.5f
+            },
+            SubseparatorsCount = 4,
+            MinLimit = 4,
+            //MaxLimit = 6
+        }
+    };
+
+    ObservableCollection<LogarithmicPoint> _startHousePrices;
+    ObservableCollection<LogarithmicPoint> _latestHousePrices;
+    IEnumerable<ISeries> _housePriceSeries;
+
+    ObservableCollection<int> _occupiedHouses;
+    ObservableCollection<int> _emptyHouses;
+    IEnumerable<ISeries> _housesStates;
+
+    ObservableCollection<int> _personProperties;
+    ObservableCollection<int> _personMaxProperties;
+    IEnumerable<ISeries> _propertyOwnersSeries;
+
+    ObservableCollection<double> _peopleTotalBalances;
+    ObservableCollection<double> _marketTotalBalances;
+    IEnumerable<ISeries> _totalBalances;
+
+    ObservableCollection<double> _averageSalary;
+    ObservableCollection<double> _averageSalaryForNonPropertyOwners;
+    ObservableCollection<double> _averageRent;
+    IEnumerable<ISeries> _salariesAndRendSeries;
+
+    void SetInitialValues()
+    {
+        _iterations = 0;
+
+        _market.GenerateHoueses(_numberOfHouses, _minPrice, _maxPrice);
+        _market.GeneratePeople(_numberOfPeople, _minBalance, _maxBalance, _minSalary, _maxSalary, _bankIsHere);
+
+        _startHousePrices = new();
+        _latestHousePrices = new();
+        _housePriceSeries = new ObservableCollection<ISeries>
+                {
+                    new ColumnSeries<LogarithmicPoint>
+                    {
+                        Mapping = (logPoint, index) => new(logPoint.X, Math.Log(logPoint.Y,                 s_logBase)),
+                        Values = _latestHousePrices,
+                        IgnoresBarPosition = true,
+                        Name = "Новая цена"
+                    },
+
+                     //чтобы старая цена была поверх новой
+                    new ColumnSeries<LogarithmicPoint>
+                    {
+                        Mapping = (logPoint, index) => new(logPoint.X, Math.Log(logPoint.Y,                 s_logBase)),
+                        Values = _startHousePrices,
+                        IgnoresBarPosition = true,
+                        Name = "Старая цена"
+                    },
+                };
+
+
+
+        _occupiedHouses = new();
+        _emptyHouses = new();
+        _housesStates = new ObservableCollection<ISeries>
+        {
+            new StackedAreaSeries<int> {Values = _occupiedHouses, Name = "Купленные дома" },
+            new StackedAreaSeries<int> {Values = _emptyHouses, Name = "Пустые дома" }
+        };
+
+        _personProperties = new();
+        _personMaxProperties = new();
+        _propertyOwnersSeries = new ObservableCollection<ISeries>
+        {
+            new ColumnSeries<int> { Values = _personMaxProperties,
+                                        Name="Макс собственность",
+                                     IgnoresBarPosition = true,},
+
+            new ColumnSeries<int> { Values = _personProperties,
+                                     Name="Собственность",
+                                     IgnoresBarPosition = true,
+            },
+        };
+
+        _peopleTotalBalances = new();
+        _marketTotalBalances = new();
+        _totalBalances = new ObservableCollection<ISeries>
+        {
+            new StackedAreaSeries<double> {
+                        Values = _peopleTotalBalances,
+                            Name = "На руках"
+                        },
+            new StackedAreaSeries<double> {
+                        Values = _marketTotalBalances,
+                            Name = "В рынке"
+                        },
+        };
+
+        _averageSalary = new();
+        _averageSalaryForNonPropertyOwners = new();
+        _averageRent = new();
+        _salariesAndRendSeries = new ObservableCollection<ISeries>
+                            {
+                                new LineSeries<double>
+                                {
+                                    Values = _averageSalary,
+                                    Name = "Средняя ЗП"
+                                },
+                                new LineSeries<double>
+                                {
+                                    Values = _averageSalaryForNonPropertyOwners,
+                                    Name = "Средняя ЗП у арендаров"
+                                },
+                                new LineSeries<double>
+                                {
+                                    Values = _averageRent,
+                                    Name = "Средняя аренда"
+                                },
+                            };
+
+        DrawData();
+    }
+
+    void DrawData()
+    {
+        DrawHousePrices();
+        DrawHouseStates();
+        DrawPropertyOwners();
+        // DrawTotalBalances();
+        // DrawSalaryAndRent();
+    }
+
+    void DrawHousePrices()
+    {
+        if (!_startHousePrices.Any())
+            foreach (var house in _market.Houses)
+            {
+                _startHousePrices.Add(new LogarithmicPoint
+                    {
+                        X = _startHousePrices.Count(),
+                        Y = house.Price
+                    });
+            }
+
+        _latestHousePrices.Clear();
+        foreach (var house in _market.Houses)
+        {
+            _latestHousePrices.Add(new LogarithmicPoint
+                {
+                    X = _latestHousePrices.Count(),
+                    Y = house.Price
+                });
+        }
+    }
+
+    void DrawHouseStates()
+    {
+        _occupiedHouses.Add(_market.Houses.Count(h => h.Owner != null));
+        _emptyHouses.Add(_market.Houses.Count(h => h.Owner == null));
+    }
+
+    void DrawPropertyOwners()
+    {
+        _personProperties.Clear();
+        _personMaxProperties.Clear();
+
+        foreach (var person in _market.People)
+        {
+            _personProperties.Add(person.Properties.Count);
+            _personMaxProperties.Add(person.MaxPropertiesCount);
+        }
+    }
+
+    void DrawTotalBalances()
+    {
+        _peopleTotalBalances.Add(_market.People.Sum(p => p.Balance));
+        _marketTotalBalances.Add(_market.Houses.Where(h => h.Owner != null).Sum(h => h.Price));
+    }
+
+    void DrawSalaryAndRent()
+    {
+        _averageSalary.Add(_market.People.Average(p => p.SalaryAfterTaxAndFood));
+        _averageSalaryForNonPropertyOwners.Add(_market.People.Where(p => p.Properties.Count == 0).Average(p => p.SalaryAfterTaxAndFood));
+        _averageRent.Add(_market.RentPrice);
+    }
+
+    void Iterations(int number)
+    {
+        for (int i = 0; i < number; i++)
+        {
+            Iteration();
+
+            _iterations++;
+        }
+
+        DrawData();
+    }
+
+    void Iteration()
+    {
+        _market.PlayIteration();
+    }
+}
