@@ -1,4 +1,6 @@
-﻿namespace Front.Healthcare
+﻿using System.Data;
+
+namespace Front.Healthcare
 {
     public class NumberGenerator
     {
@@ -42,6 +44,26 @@
         public NumberGenerator Generator { get; set; }
         public List<Sickness> Line { get; set; } = new();
         public List<Sickness> TotalSicknesses { get; set; } = new();
+    }
+
+    public class Doctor
+    {
+        private Market _market;
+
+        public Doctor(Market market)
+        {
+            _market = market;
+        }
+
+        public void Update()
+        {
+            var orderedLine = _market.Line.OrderBy(s => s.IsUrgent).ToList();
+
+            foreach (var sickness in orderedLine)
+            {
+                sickness.Heal(_market.DoctorSkillMultiplyer * _market.SicknessProgressionStep);
+            }
+        }
     }
 
     public class Person
@@ -192,7 +214,10 @@
 
         public void Heal(double amount)
         {
-            Strength -= amount;
+            if (Strength > amount)
+                Strength -= amount;
+            else
+                Strength = 0;
         }
 
         public void Update()
