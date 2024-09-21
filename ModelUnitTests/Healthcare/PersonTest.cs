@@ -243,6 +243,98 @@ namespace ModelUnitTests
             Assert.IsNotNull(market.TotalSicknesses.FirstOrDefault());
         }
 
+        [TestMethod]
+        public void PersonRegistersCheckup()
+        {
+            var doubleQueue = new Queue<double>();
+            doubleQueue.Enqueue(.1); //заболеет ли
+            doubleQueue.Enqueue(.6); //как сильно
+            doubleQueue.Enqueue(.3); //будет ли рынок лечить человека
+            doubleQueue.Enqueue(0); //прогресс болезни
+
+            var market = GenerateMarket(doubleQueue);
+            market.SelfPaidCare = true;
+
+            var person = new Person(market);
+            Assert.AreEqual(0, person.Sicknesses.Count());
+
+            doubleQueue.Enqueue(0); //сам он её лечить не хочет
+            person.Update(); //первый раз 
+            Assert.AreEqual(1, person.Sicknesses.Count());
+            Assert.AreEqual(.5, person.Sicknesses.First().Strength, .001);
+
+            var firstSickness = person.Sicknesses.First();
+
+            doubleQueue.Enqueue(0); //новой болезни нет
+            doubleQueue.Enqueue(0); //первая болезнь регрессирует
+            doubleQueue.Enqueue(0); //сам он её лечить не хочет
+            person.Update();
+            Assert.AreEqual(.4, person.Sicknesses.First().Strength, .001);
+
+            doubleQueue.Enqueue(0); //новой болезни нет
+            doubleQueue.Enqueue(0); //первая болезнь регрессирует
+            doubleQueue.Enqueue(0); //сам он её лечить не хочет
+            person.Update();
+            Assert.AreEqual(.3, person.Sicknesses.First().Strength, .001);
+
+            doubleQueue.Enqueue(0); //новой болезни нет
+            doubleQueue.Enqueue(0); //первая болезнь регрессирует
+            doubleQueue.Enqueue(0); //сам он её лечить не хочет
+            person.Update();
+            Assert.AreEqual(.2, person.Sicknesses.First().Strength, .001);
+
+            doubleQueue.Enqueue(0); //новой болезни нет
+            doubleQueue.Enqueue(0); //первая болезнь регрессирует
+            doubleQueue.Enqueue(0); //сам он её лечить не хочет
+            person.Update();
+            Assert.AreEqual(.1, person.Sicknesses.First().Strength, .001);
+            Assert.IsFalse(person.Sicknesses.First().IsCheckup);
+            Assert.AreSame(firstSickness, person.Sicknesses.First());
+
+            doubleQueue.Enqueue(0); //новой болезни нет
+            doubleQueue.Enqueue(0); //первая болезнь регрессирует
+            doubleQueue.Enqueue(1); //но готов заплатить за чекап
+            person.Update();
+            Assert.AreEqual(0, person.Sicknesses.First().Strength, .001);
+            Assert.IsTrue(person.Sicknesses.First().IsCheckup);
+            Assert.AreNotSame(firstSickness, person.Sicknesses.First());
+            Assert.AreEqual(1, person.Sicknesses.Count());
+            Assert.AreEqual(1, market.Line.Count());
+            Assert.AreEqual(2, market.TotalSicknesses.Count());
+        }
+
+        [TestMethod]
+        public void PersonUpdatesCheckup()
+        {
+            var doubleQueue = new Queue<double>();
+            doubleQueue.Enqueue(0); //заболеет ли
+            doubleQueue.Enqueue(.6); //готов оплатить чекап
+
+            var market = GenerateMarket(doubleQueue);
+            market.SelfPaidCare = true;
+
+            var person = new Person(market);
+            Assert.AreEqual(0, person.Sicknesses.Count());
+
+            person.Update();
+            Assert.AreEqual(1, person.Sicknesses.Count());
+            Assert.IsTrue(person.Sicknesses.First().IsCheckup);
+            var checkupSickness = person.Sicknesses.First();
+
+            doubleQueue.Enqueue(1); //заболел
+            doubleQueue.Enqueue(.6); //как сильно
+            doubleQueue.Enqueue(.3); //будет ли рынок лечить человека
+            doubleQueue.Enqueue(0); //болезнь не прогрессирует
+            doubleQueue.Enqueue(0); //сам лечить не хочет
+            person.Update();
+            Assert.AreEqual(1, person.Sicknesses.Count());
+            Assert.IsFalse(person.Sicknesses.First().IsCheckup);
+            Assert.AreEqual(.5, person.Sicknesses.First().Strength);
+            Assert.AreEqual(.3, person.Sicknesses.First().AcceptanceByMarket);
+            Assert.AreSame(person.Sicknesses.First(), checkupSickness);
+            Assert.AreEqual(1, market.TotalSicknesses.Count);
+        }
+
 
         private Market GenerateMarket(Queue<double> doubles)
         {
@@ -251,6 +343,7 @@ namespace ModelUnitTests
             var market = new Market
             {
                 Generator = generator,
+                PeopleWantToCkeckUp = .5,
                 RiskToGetSickness = .05,
                 SicknessIsAcceptedByMarketThreshold = .2,
                 SicknessIsHealedThreshold = .05,

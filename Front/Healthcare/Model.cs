@@ -80,9 +80,18 @@
 
             var sicknessStrength = _market.Generator.RandomDouble;
             var sicknessAcceptanceByMarket = _market.Generator.RandomDouble;
-            var sickness = new Sickness(sicknessStrength, _market, sicknessAcceptanceByMarket);
 
-            Sicknesses.Add(sickness);
+            if (!Sicknesses.Any(s => s.IsCheckup))
+            {
+                var sickness = new Sickness(sicknessStrength, _market, sicknessAcceptanceByMarket);
+                Sicknesses.Add(sickness);
+                return;
+            }
+
+            var currentChecupSickness = Sicknesses.First(s => s.IsCheckup);
+            currentChecupSickness.IsCheckup = false;
+            currentChecupSickness.Strength = sicknessStrength;
+            currentChecupSickness.AcceptanceByMarket = sicknessAcceptanceByMarket;
         }
 
         public void CreateCheckupSickness()
@@ -103,6 +112,7 @@
 
             checkupSickness = new Sickness(_market, true);
             Sicknesses.Add(checkupSickness);
+            _market.Line.Add(checkupSickness);
         }
 
         public void HandleSickness(Sickness sickness)
