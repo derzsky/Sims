@@ -14,7 +14,7 @@ namespace ModelUnitTests.Healthcare
         public void DoctorHelpsIfAccepted()
         {
             var doubleQueue = new Queue<double>();
-            doubleQueue.Enqueue(.1); //заболеет ли
+            doubleQueue.Enqueue(.01); //заболеет ли
             doubleQueue.Enqueue(.6); //как сильно
             doubleQueue.Enqueue(.3); //будет ли рынок лечить человека
             doubleQueue.Enqueue(0); //прогресс болезни

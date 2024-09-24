@@ -14,7 +14,7 @@ namespace ModelUnitTests
         public void GetNewSicknessFalse()
         {
             var doubleQueue = new Queue<double>();
-            doubleQueue.Enqueue(.01);
+            doubleQueue.Enqueue(.9); //заболеет ли
 
             var market = GenerateMarket(doubleQueue);
 
@@ -29,8 +29,8 @@ namespace ModelUnitTests
         public void GetNewSicknessTrue()
         {
             var doubleQueue = new Queue<double>();
+            doubleQueue.Enqueue(.9); //заболеет ли
             doubleQueue.Enqueue(.01);
-            doubleQueue.Enqueue(.1);
             doubleQueue.Enqueue(.1);
             doubleQueue.Enqueue(.1);
 
@@ -49,7 +49,7 @@ namespace ModelUnitTests
         public void SicknessIsUrgent()
         {
             var doubleQueue = new Queue<double>();
-            doubleQueue.Enqueue(.1);
+            doubleQueue.Enqueue(.01);
             doubleQueue.Enqueue(.9);
             doubleQueue.Enqueue(.3);
 
@@ -65,7 +65,7 @@ namespace ModelUnitTests
         public void SicknessIsNotUrgent()
         {
             var doubleQueue = new Queue<double>();
-            doubleQueue.Enqueue(.1);
+            doubleQueue.Enqueue(.01);
             doubleQueue.Enqueue(.7);
             doubleQueue.Enqueue(.3);
 
@@ -81,7 +81,7 @@ namespace ModelUnitTests
         public void SicknessRegistersAsUrgent()
         {
             var doubleQueue = new Queue<double>();
-            doubleQueue.Enqueue(.1);
+            doubleQueue.Enqueue(.01);
             doubleQueue.Enqueue(.9);
             doubleQueue.Enqueue(.3);
 
@@ -98,7 +98,7 @@ namespace ModelUnitTests
         public void SicknessRegistersAsNotUrgent()
         {
             var doubleQueue = new Queue<double>();
-            doubleQueue.Enqueue(.1);
+            doubleQueue.Enqueue(.01);
             doubleQueue.Enqueue(.5);
             doubleQueue.Enqueue(.3);
             doubleQueue.Enqueue(.6);
@@ -116,7 +116,7 @@ namespace ModelUnitTests
         public void SicknessProgressesToUrgent()
         {
             var doubleQueue = new Queue<double>();
-            doubleQueue.Enqueue(.1);
+            doubleQueue.Enqueue(.01);
             doubleQueue.Enqueue(.4);
             doubleQueue.Enqueue(.3);
 
@@ -128,31 +128,31 @@ namespace ModelUnitTests
             person.Update();
             Assert.AreEqual(.5, person.Sicknesses.First().Strength, .0001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(1);
             person.Update();
             Assert.IsFalse(person.Sicknesses.First().IsUrgent);
             Assert.AreEqual(.6, person.Sicknesses.First().Strength, .0001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(1);
             person.Update();
             Assert.IsFalse(person.Sicknesses.First().IsUrgent);
             Assert.AreEqual(.7, person.Sicknesses.First().Strength, .0001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(1);
             person.Update();
             Assert.IsFalse(person.Sicknesses.First().IsUrgent);
             Assert.AreEqual(.8, person.Sicknesses.First().Strength, .0001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(1);
             person.Update();
             Assert.IsTrue(person.Sicknesses.First().IsUrgent);
             Assert.AreEqual(.9, person.Sicknesses.First().Strength, .0001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(1);
             person.Update();
             Assert.IsTrue(person.Sicknesses.First().IsUrgent);
@@ -163,7 +163,7 @@ namespace ModelUnitTests
         public void SicknessCanBeHealed()
         {
             var doubleQueue = new Queue<double>();
-            doubleQueue.Enqueue(.1);
+            doubleQueue.Enqueue(.01);
             doubleQueue.Enqueue(.8);
             doubleQueue.Enqueue(.3);
             doubleQueue.Enqueue(.0);
@@ -174,42 +174,42 @@ namespace ModelUnitTests
             person.Update();
             Assert.AreEqual(.7, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(0);
             person.Update();
             Assert.AreEqual(.6, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(0);
             person.Update();
             Assert.AreEqual(.5, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(0);
             person.Update();
             Assert.AreEqual(.4, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(0);
             person.Update();
             Assert.AreEqual(.3, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(0);
             person.Update();
             Assert.AreEqual(.2, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(0);
             person.Update();
             Assert.AreEqual(.1, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(0);
             person.Update();
             Assert.AreEqual(.0, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(0);
             person.Update();
             Assert.AreEqual(0, person.Sicknesses.First().Strength, .001);
@@ -219,7 +219,7 @@ namespace ModelUnitTests
         public void SicknessUnregistersUrgent()
         {
             var doubleQueue = new Queue<double>();
-            doubleQueue.Enqueue(.1);
+            doubleQueue.Enqueue(.01);
             doubleQueue.Enqueue(.9);
             doubleQueue.Enqueue(.3);
 
@@ -234,7 +234,7 @@ namespace ModelUnitTests
             person.Sicknesses.First().Heal(.89);
             Assert.AreEqual(.01, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0);
+            doubleQueue.Enqueue(0.6);
             doubleQueue.Enqueue(0);
             doubleQueue.Enqueue(1);
             person.Update();
@@ -247,7 +247,7 @@ namespace ModelUnitTests
         public void PersonRegistersCheckup()
         {
             var doubleQueue = new Queue<double>();
-            doubleQueue.Enqueue(.1); //заболеет ли
+            doubleQueue.Enqueue(.01); //заболеет ли
             doubleQueue.Enqueue(.6); //как сильно
             doubleQueue.Enqueue(.3); //будет ли рынок лечить человека
             doubleQueue.Enqueue(0); //прогресс болезни
@@ -265,25 +265,25 @@ namespace ModelUnitTests
 
             var firstSickness = person.Sicknesses.First();
 
-            doubleQueue.Enqueue(0); //новой болезни нет
+            doubleQueue.Enqueue(0.6); //новой болезни нет
             doubleQueue.Enqueue(0); //первая болезнь регрессирует
             doubleQueue.Enqueue(0); //сам он её лечить не хочет
             person.Update();
             Assert.AreEqual(.4, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0); //новой болезни нет
+            doubleQueue.Enqueue(0.6); //новой болезни нет
             doubleQueue.Enqueue(0); //первая болезнь регрессирует
             doubleQueue.Enqueue(0); //сам он её лечить не хочет
             person.Update();
             Assert.AreEqual(.3, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0); //новой болезни нет
+            doubleQueue.Enqueue(0.6); //новой болезни нет
             doubleQueue.Enqueue(0); //первая болезнь регрессирует
             doubleQueue.Enqueue(0); //сам он её лечить не хочет
             person.Update();
             Assert.AreEqual(.2, person.Sicknesses.First().Strength, .001);
 
-            doubleQueue.Enqueue(0); //новой болезни нет
+            doubleQueue.Enqueue(0.6); //новой болезни нет
             doubleQueue.Enqueue(0); //первая болезнь регрессирует
             doubleQueue.Enqueue(0); //сам он её лечить не хочет
             person.Update();
@@ -291,7 +291,7 @@ namespace ModelUnitTests
             Assert.IsFalse(person.Sicknesses.First().IsCheckup);
             Assert.AreSame(firstSickness, person.Sicknesses.First());
 
-            doubleQueue.Enqueue(0); //новой болезни нет
+            doubleQueue.Enqueue(0.6); //новой болезни нет
             doubleQueue.Enqueue(0); //первая болезнь регрессирует
             doubleQueue.Enqueue(1); //но готов заплатить за чекап
             person.Update();
@@ -307,7 +307,7 @@ namespace ModelUnitTests
         public void PersonUpdatesCheckup()
         {
             var doubleQueue = new Queue<double>();
-            doubleQueue.Enqueue(0); //заболеет ли
+            doubleQueue.Enqueue(0.7); //заболеет ли
             doubleQueue.Enqueue(.6); //готов оплатить чекап
 
             var market = GenerateMarket(doubleQueue);
@@ -321,7 +321,7 @@ namespace ModelUnitTests
             Assert.IsTrue(person.Sicknesses.First().IsCheckup);
             var checkupSickness = person.Sicknesses.First();
 
-            doubleQueue.Enqueue(1); //заболел
+            doubleQueue.Enqueue(.01); //заболел
             doubleQueue.Enqueue(.6); //как сильно
             doubleQueue.Enqueue(.3); //будет ли рынок лечить человека
             doubleQueue.Enqueue(0); //болезнь не прогрессирует

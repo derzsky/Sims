@@ -97,7 +97,7 @@ namespace Front.Healthcare
         public void GetNewSickness()
         {
             var randomNumber = _market.Generator.RandomDouble;
-            if (randomNumber < _market.RiskToGetSickness)
+            if (randomNumber > _market.RiskToGetSickness)
                 return;
 
             var sicknessStrength = _market.Generator.RandomDouble;
