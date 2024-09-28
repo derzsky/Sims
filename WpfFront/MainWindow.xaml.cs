@@ -267,11 +267,6 @@ namespace WpfFront
                     StackGroup = 2
                 });
 
-            var notCheckup = Illnesses.Where(i => !i.IsCheckup(Market1)).ToList();
-            var goesToDoctor = notCheckup.Where(i => i.GetSolution(Market1) == Illness.Solution.Doctor).ToList();
-            var sick = goesToDoctor.Where(i => i.Strength >= Market1.SicknessIsAcceptedByMarketThreshold).ToList();
-            var drugstoreIllnesses = Illnesses.Where(i => i.GetSolution(Market1) == Illness.Solution.Drugstore).ToList();
-
             WillBeHealedByDoctors.Add(Illnesses.Count(i =>
                     !i.IsCheckup(Market1)
                     && i.GetSolution(Market1) == Illness.Solution.Doctor
