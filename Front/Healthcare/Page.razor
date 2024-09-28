@@ -1,0 +1,165 @@
+﻿@page "/"
+
+@using LiveChartsCore
+@using LiveChartsCore.SkiaSharpView
+@using LiveChartsCore.SkiaSharpView.Blazor
+@using System.Collections.ObjectModel
+@using LiveChartsCore.SkiaSharpView.Painting;
+@using SkiaSharp;
+
+<PageTitle>Подпишись, нажми лайк</PageTitle>
+
+<h4>Симуляция здравоохранения</h4>
+
+<table>
+    <tr>
+        <td style="width: 200px"><label for="DoctorSkillMultiplyer">Множитель качества врача</label></td>
+        <td><InputNumber TValue="double" @bind-Value=_market1.DoctorSkillMultiplyer id="DoctorSkillMultiplyer"></InputNumber></td>
+        <td>@_market1.DoctorSkillMultiplyer.ToString("##.##")</td>
+    </tr>
+</table>
+
+<CartesianChart Series="_sicknessesCount"
+                YAxes="YAxes"></CartesianChart>
+
+@code {
+    Market _market1 = new Market
+        {
+            DoctorSkillMultiplyer = 2,
+            Generator = new NumberGenerator(),
+            PeopleWantToCkeckUp = .5,
+            RiskToGetSickness = .000137,
+            SelfPaidCare = true,
+            SicknessIsAcceptedByMarketThreshold = 0,
+            SicknessIsHealedThreshold = .05,
+            SicknessProgressionProgability = .5,
+            SicknessProgressionStep = .1,
+            TolereableSicknessThreshold = .4,
+            UrgencyThreshold = .8
+        };
+
+    Market _market2 = new Market
+        {
+            DoctorSkillMultiplyer = 2,
+            Generator = new NumberGenerator(),
+            PeopleWantToCkeckUp = .5,
+            RiskToGetSickness = .000137,
+            SicknessIsAcceptedByMarketThreshold = 0.2,
+            SicknessIsHealedThreshold = .05,
+            SicknessProgressionProgability = .5,
+            SicknessProgressionStep = .1,
+            TolereableSicknessThreshold = .4,
+            UrgencyThreshold = .8
+        };
+
+    Doctor _doctor1, _doctor2;
+    List<Person> _people1 = new List<Person>();
+    List<Person> _people2 = new List<Person>();
+
+    ObservableCollection<double> _urgentSicknessesCount = new();
+    ObservableCollection<double> _notUrgentSicknessesCount = new();
+    ObservableCollection<double> _checkupSicknessesCount = new();
+
+    IEnumerable<ISeries> _sicknessesCount;
+
+    Axis[] YAxes { get; set; } =
+        {
+        new Axis
+        {
+            MaxLimit = 600
+        }
+    };
+
+    int _peopleCount = 300;
+
+    protected override void OnInitialized()
+    {
+        _doctor1 = new Doctor(_market1);
+        _doctor2 = new Doctor(_market2);
+
+        for (int i = 0; i < _peopleCount; i++)
+        {
+            var person1 = new Person(_market1);
+            _people1.Add(person1);
+
+            var person2 = new Person(_market2);
+            _people2.Add(person2);
+        }
+
+        _urgentSicknessesCount.Add(0);
+        _urgentSicknessesCount.Add(0);
+        _notUrgentSicknessesCount.Add(0);
+        _notUrgentSicknessesCount.Add(0);
+        _checkupSicknessesCount.Add(0);
+        _checkupSicknessesCount.Add(0);
+
+        _sicknessesCount = new ObservableCollection<ISeries>
+        {
+            new StackedColumnSeries<double>
+            {
+                Values = _urgentSicknessesCount,
+                Tag = "safd"
+            },
+            new StackedColumnSeries<double>
+            {
+                Values = _notUrgentSicknessesCount
+            },
+            new StackedColumnSeries<double>
+            {
+                Values = _checkupSicknessesCount
+            },
+
+        };
+
+        StartUpdateCycles();
+    }
+
+    async Task StartUpdateCycles()
+    {
+        do
+        {
+            UpdateDoctor(24);
+            DrawSicknessesCount();
+            UpdatePeople();
+            DrawSicknessesCount();
+
+        } while (true);
+    }
+
+    void UpdateDoctor(int times)
+    {
+        var patientsPerDay = 24;
+
+        _doctor1.Update(patientsPerDay);
+        _doctor2.Update(patientsPerDay);
+    }
+
+    void DrawSicknessesCount()
+    {
+        var lineList1 = _market1.Line.ToList();
+        var urgentCount1 = lineList1.Where(s => s.IsUrgent).Count();
+        var notUrgentCount1 = lineList1.Where(s => !s.IsUrgent && !s.IsCheckup).Count();
+        var checkupCount1 = lineList1.Where(s => s.IsCheckup).Count();
+
+        var lineList2 = _market2.Line.ToList();
+        var urgentCount2 = lineList2.Where(s => s.IsUrgent).Count();
+        var notUrgentCount2 = lineList2.Where(s => !s.IsUrgent && !s.IsCheckup).Count();
+        var checkupCount2 = lineList2.Where(s => !s.IsUrgent && s.IsCheckup).Count();
+
+        _urgentSicknessesCount[0] = urgentCount1;
+        _urgentSicknessesCount[1] = urgentCount2;
+        _notUrgentSicknessesCount[0] = notUrgentCount1;
+        _notUrgentSicknessesCount[1] = notUrgentCount2;
+        _checkupSicknessesCount[0] = checkupCount1;
+        _checkupSicknessesCount[1] = checkupCount2;
+    }
+
+    void UpdatePeople()
+    {
+        for (int i = 0; i < _peopleCount; i++)
+        {
+            _people1[i].Update();
+            _people2[i].Update();
+        }
+    }
+}

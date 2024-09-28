@@ -14,7 +14,7 @@ namespace Front.Healthcare
                 if (_doubles.Any())
                     return _doubles.Dequeue();
 
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
                 return Random.Shared.NextDouble();
             }
         }
@@ -44,6 +44,10 @@ namespace Front.Healthcare
         public NumberGenerator Generator { get; set; }
         public List<Sickness> Line { get; set; } = new();
         public List<Sickness> TotalSicknesses { get; set; } = new();
+
+        public int LineUrgentCount { get { return Line.Count(s => s.IsUrgent); } }
+        public int LineNotUrgentCount { get { return Line.Count(s => !s.IsUrgent && !s.IsCheckup); } }
+        public int LineCheckupCount { get { return Line.Count(s => s.IsCheckup); } }
     }
 
     public class Doctor
@@ -55,12 +59,19 @@ namespace Front.Healthcare
             _market = market;
         }
 
-        public void Update()
+        public void Update(int times = 1)
         {
-            var orderedLine = _market.Line.OrderBy(s => s.IsUrgent).ToList();
+            var orderedLine = _market.Line.OrderByDescending(s => s.IsUrgent).ToList();
 
-            foreach (var sickness in orderedLine)
+            var urgentCases = _market.Line.Where(s => s.IsUrgent).ToList();
+
+            var whatIsShorter = _market.Line.Count < times ?
+                                    _market.Line.Count
+                                    : times;
+
+            for (int i = 0; i < whatIsShorter; i++)
             {
+                var sickness = orderedLine[i];
                 sickness.Heal(_market.DoctorSkillMultiplyer * _market.SicknessProgressionStep);
             }
         }
@@ -218,11 +229,17 @@ namespace Front.Healthcare
                 Strength -= amount;
             else
                 Strength = 0;
+
+            if (!IsCheckup)
+                return;
+
+            if (_market.Line.Contains(this))
+                _market.Line.Remove(this);
         }
 
         public void Update()
         {
-            if (IsUrgent)
+            if (IsUrgent || IsCheckup)
                 return;
 
             var progressionProbability = _market.Generator.RandomDouble;
