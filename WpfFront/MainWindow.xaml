@@ -4,27 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfFront"
-        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-        mc:Ignorable="d"
+        xmlns:hc="clr-namespace:WpfFront.HealthCare"
         Title="Виктор" Height="450" Width="800">
-
-    <Window.DataContext>
-        <local:ViewModel />
-    </Window.DataContext>
-
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="650*"/>
-            <ColumnDefinition Width="1*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="3*"/>
-        </Grid.RowDefinitions>
-
-        <lvc:CartesianChart Series="{Binding GeneratedIllnessesSeries}" Sections="{Binding Sections}" YAxes="{Binding YAxes01}" TooltipPosition="Left" TooltipTextSize="16"/>
-
-        <lvc:CartesianChart Grid.Row="1" Series="{Binding SolutionsCountSeries}" XAxes="{Binding EmptyAxis}" YAxes="{Binding YAxes0100}" TooltipPosition="Right" TooltipTextSize="16" LegendPosition="Right"/>
-
+        <hc:VisualControl>
+            
+        </hc:VisualControl>
     </Grid>
 </Window>
