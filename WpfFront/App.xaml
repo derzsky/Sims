@@ -4,6 +4,11 @@
              xmlns:local="clr-namespace:WpfFront"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <BitmapImage x:Key="AppIcon" UriSource="icon48.ico"/>
+            <Style TargetType="{x:Type Window}">
+                <Setter Property="FontFamily" Value="Consolas" />
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

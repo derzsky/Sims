@@ -4,11 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfFront"
+        xmlns:fe="clr-namespace:WpfFront.FuelEconomy"
         xmlns:hc="clr-namespace:WpfFront.HealthCare"
-        Title="Виктор" Height="450" Width="800">
+        Title="Подпишись на Виктора"
+        WindowStartupLocation="Manual" Left="70" Top="0"
+        Height="1080" Width="960"
+        Icon="icon48.ico">
     <Grid>
-        <hc:VisualControl>
+        <fe:VisualControl>
             
-        </hc:VisualControl>
+        </fe:VisualControl>
     </Grid>
 </Window>

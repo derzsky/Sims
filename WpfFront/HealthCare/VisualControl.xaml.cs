@@ -13,12 +13,9 @@ namespace WpfFront.HealthCare
     /// </summary>
     public partial class VisualControl : UserControl
     {
-        ViewModel _viewModel;
         public VisualControl()
         {
             InitializeComponent();
-            
-            _viewModel = DataContext as ViewModel;
         }
     }
 
