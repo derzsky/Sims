@@ -194,7 +194,7 @@
                    VerticalAlignment="Center"
                    Grid.Row="1">Запас хода</TextBlock>
 
-            <Slider Minimum="150"
+            <Slider Minimum="100"
                     Maximum="600"
                     Grid.Column="1"
                     Grid.Row="1"
@@ -204,7 +204,7 @@
                     TickPlacement="BottomRight"
                     VerticalAlignment="Bottom"></Slider>
 
-            <Slider Minimum="150"
+            <Slider Minimum="100"
                     Maximum="600"
                     Grid.Column="3"
                     Grid.Row="1"
