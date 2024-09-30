@@ -16,26 +16,87 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="3*"/>
-            <RowDefinition Height="21*"/>
+            <RowDefinition Height="8*"/>
             <RowDefinition Height="8*"/>
             <RowDefinition Height="10*"/>
             <RowDefinition Height="18*"/>
             <RowDefinition Height="21*"/>
-            <RowDefinition Height="1*"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="21*"/>
         </Grid.RowDefinitions>
-        <WrapPanel Margin="10 10">
-            <TextBlock FontFamily="Roboto" FontSize="20" VerticalAlignment="Center">Симуляция расхода топлива</TextBlock>
+        <WrapPanel Margin="14 14 0 0">
+            <TextBlock FontFamily="Roboto" FontSize="20" VerticalAlignment="Center">Симуляция крейсерской скорости и расхода топлива на трассе.</TextBlock>
         </WrapPanel>
         <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition
-            </Grid.ColumnDefinitions>
 
-            <lvc:CartesianChart Grid.Row="1"
-                            Series="{Binding WindResistanceSeries}"
-                            LegendPosition="Left"
-                            YAxes="{Binding Limit3Axes}"/>
+            <Grid Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*" />
+                    <RowDefinition Height="1*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock FontFamily="Roboto"
+                       FontSize="20"
+                       VerticalAlignment="Center"
+                       Grid.Row="1">Расход</TextBlock>
+
+                <Label FontFamily="Roboto"
+                       FontSize="20"
+                       VerticalAlignment="Center"
+                       Grid.Column="1"
+                       Grid.ColumnSpan="2"
+                       HorizontalAlignment="Center">При 90 км/ч</Label>
+
+                <Label FontFamily="Roboto"
+                       FontSize="20"
+                       VerticalAlignment="Center"
+                       Grid.Column="3"
+                       Grid.ColumnSpan="2"
+                       HorizontalAlignment="Center">При 120 км/ч</Label>
+
+                <Slider Grid.Column="1"
+                        Grid.Row="1"
+                        VerticalAlignment="Center"
+                        TickPlacement="BottomRight"
+                        Minimum="3.5"
+                        Maximum="8"
+                        TickFrequency=".1"
+                        Value="{Binding Conditions.Consumption90}"
+                        IsSnapToTickEnabled="True"/>
+
+                <Slider Grid.Column="3"
+                        Grid.Row="1"
+                        VerticalAlignment="Center"
+                        TickPlacement="BottomRight"
+                        Minimum="3.5"
+                        Maximum="8"
+                        TickFrequency=".1"
+                        Value="{Binding Conditions.Consumption120}"
+                        IsSnapToTickEnabled="True"/>
+
+                <TextBlock Grid.Column="2"
+                           Grid.Row="1"
+                           FontFamily="Roboto"
+                           FontSize="20"
+                           Text="{Binding Conditions.Consumption90}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"></TextBlock>
+
+                <TextBlock Grid.Column="4"
+                           Grid.Row="1"
+                           FontFamily="Roboto"
+                           FontSize="20"
+                           Text="{Binding Conditions.Consumption120}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"></TextBlock>
+            </Grid>
         </Grid>
 
         <Grid Margin="10"
@@ -52,14 +113,14 @@
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
 
-            <Label FontFamily="Roboto"
+            <TextBlock FontFamily="Roboto"
                    FontSize="20"
-                   VerticalAlignment="Center">Искомая скорость</Label>
+                   VerticalAlignment="Center">Искомая скорость</TextBlock>
 
             <Slider Minimum="70"
                     Maximum="150"
                     Grid.Column="1"
-                    Value="{Binding FinalSpeed}"
+                    Value="{Binding Conditions.FinalSpeed}"
                     TickFrequency="10"
                     IsSnapToTickEnabled="True"
                     TickPlacement="BottomRight"
@@ -69,13 +130,13 @@
                        FontSize="20"
                        VerticalAlignment="Center"
                        Grid.Column="2"
-                       Text="{Binding FinalSpeed}"
+                       Text="{Binding Conditions.FinalSpeed}"
                        HorizontalAlignment="Center"></TextBlock>
 
-            <Label FontFamily="Roboto"
+            <TextBlock FontFamily="Roboto"
                    FontSize="20"
                    VerticalAlignment="Center"
-                   Grid.Row="1">Длительность заправки</Label>
+                   Grid.Row="1">Длительность заправки</TextBlock>
 
             <Slider Minimum="10"
                     Maximum="60"
@@ -127,11 +188,11 @@
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        >Черепаха</TextBlock>
-            
-            <Label FontFamily="Roboto"
+
+            <TextBlock FontFamily="Roboto"
                    FontSize="20"
                    VerticalAlignment="Center"
-                   Grid.Row="1">Запас хода</Label>
+                   Grid.Row="1">Запас хода</TextBlock>
 
             <Slider Minimum="150"
                     Maximum="600"
@@ -183,9 +244,15 @@
                             LegendPosition="Left"
                             YAxes="{Binding SpeedAxes}"/>
 
-        <!--<lvc:CartesianChart Margin="10 10"
-                            Grid.Row="1"
-                            Series="{Binding RunnerSeries}">
-        </lvc:CartesianChart>-->
+        <TextBlock FontFamily="Roboto"
+                   Margin="14 14 0 0"
+                   FontSize="20"
+                   VerticalAlignment="Center"
+                   Grid.Row="6">Расход топлива, расчитанный методом <Bold>экстраполяции</Bold></TextBlock>
+        
+        <lvc:CartesianChart Grid.Row="7"
+                            Series="{Binding ConsumptionsSeries}"
+                            LegendPosition="Left">
+        </lvc:CartesianChart>
     </Grid>
 </UserControl>
