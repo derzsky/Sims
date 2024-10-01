@@ -254,7 +254,7 @@
                    Margin="10 0 0 0"
                    FontSize="20"
                    VerticalAlignment="Center"
-                   Grid.Row="6">Расход топлива, расчитанный методом <Bold>экстраполяции</Bold></TextBlock>
+                   Grid.Row="6">Расход топлива, раcсчитанный методом <Bold>экстраполяции</Bold></TextBlock>
         
         <lvc:CartesianChart Grid.Row="7"
                             Series="{Binding ConsumptionsSeries}"
