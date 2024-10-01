@@ -8,7 +8,7 @@
         xmlns:hc="clr-namespace:WpfFront.HealthCare"
         Title="Подпишись на Виктора"
         WindowStartupLocation="Manual" Left="70" Top="0"
-        Height="1080" Width="960"
+        Height="1087" Width="960"
         Icon="icon48.ico">
     <Grid>
         <fe:VisualControl>

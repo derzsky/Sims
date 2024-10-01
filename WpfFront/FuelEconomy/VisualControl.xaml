@@ -6,8 +6,8 @@
              mc:Ignorable="d" 
              xmlns:local="clr-namespace:WpfFront.FuelEconomy"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-             Height="1040" Width="944"
-             Background="AliceBlue">
+             Height="1047" Width="944"
+             Background="LightGray">
 
     <Control.DataContext>
         <local:ViewModel />
@@ -24,7 +24,7 @@
             <RowDefinition Height="3*"/>
             <RowDefinition Height="21*"/>
         </Grid.RowDefinitions>
-        <WrapPanel Margin="14 14 0 0">
+        <WrapPanel Margin="10 5 0 0">
             <TextBlock FontFamily="Roboto" FontSize="20" VerticalAlignment="Center">Симуляция крейсерской скорости и расхода топлива на трассе.</TextBlock>
         </WrapPanel>
         <Grid Grid.Row="1">
@@ -69,7 +69,8 @@
                         Maximum="8"
                         TickFrequency=".1"
                         Value="{Binding Conditions.Consumption90}"
-                        IsSnapToTickEnabled="True"/>
+                        IsSnapToTickEnabled="True"
+                        Foreground="DarkGray" />
 
                 <Slider Grid.Column="3"
                         Grid.Row="1"
@@ -79,7 +80,8 @@
                         Maximum="8"
                         TickFrequency=".1"
                         Value="{Binding Conditions.Consumption120}"
-                        IsSnapToTickEnabled="True"/>
+                        IsSnapToTickEnabled="True"
+                        Foreground="DarkGray" />
 
                 <TextBlock Grid.Column="2"
                            Grid.Row="1"
@@ -124,7 +126,8 @@
                     TickFrequency="10"
                     IsSnapToTickEnabled="True"
                     TickPlacement="BottomRight"
-                    VerticalAlignment="Bottom"></Slider>
+                    VerticalAlignment="Bottom"
+                        Foreground="DarkGray" ></Slider>
 
             <TextBlock FontFamily="Roboto"
                        FontSize="20"
@@ -146,7 +149,8 @@
                     TickFrequency="5"
                     IsSnapToTickEnabled="True"
                     TickPlacement="BottomRight"
-                    VerticalAlignment="Bottom"></Slider>
+                    VerticalAlignment="Bottom"
+                        Foreground="DarkGray" ></Slider>
 
             <TextBlock FontFamily="Roboto"
                        FontSize="20"
@@ -202,7 +206,8 @@
                     TickFrequency="25"
                     IsSnapToTickEnabled="True"
                     TickPlacement="BottomRight"
-                    VerticalAlignment="Bottom"></Slider>
+                    VerticalAlignment="Bottom"
+                        Foreground="DarkGray" ></Slider>
 
             <Slider Minimum="100"
                     Maximum="600"
@@ -212,7 +217,8 @@
                     TickFrequency="25"
                     IsSnapToTickEnabled="True"
                     TickPlacement="BottomRight"
-                    VerticalAlignment="Bottom"></Slider>
+                    VerticalAlignment="Bottom"
+                        Foreground="DarkGray" ></Slider>
 
             <TextBlock FontFamily="Roboto"
                        FontSize="20"
@@ -245,7 +251,7 @@
                             YAxes="{Binding SpeedAxes}"/>
 
         <TextBlock FontFamily="Roboto"
-                   Margin="14 14 0 0"
+                   Margin="10 0 0 0"
                    FontSize="20"
                    VerticalAlignment="Center"
                    Grid.Row="6">Расход топлива, расчитанный методом <Bold>экстраполяции</Bold></TextBlock>
