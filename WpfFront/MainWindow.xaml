@@ -6,13 +6,14 @@
         xmlns:local="clr-namespace:WpfFront"
         xmlns:fe="clr-namespace:WpfFront.FuelEconomy"
         xmlns:hc="clr-namespace:WpfFront.HealthCare"
+        xmlns:wd="clr-namespace:WpfFront.WarDamage"
         Title="Подпишись на Виктора"
         WindowStartupLocation="Manual" Left="70" Top="0"
-        Height="1087" Width="960"
+        Height="450" Width="800"
         Icon="icon48.ico">
     <Grid>
-        <fe:VisualControl>
+        <wd:VisualControl>
             
-        </fe:VisualControl>
+        </wd:VisualControl>
     </Grid>
 </Window>
